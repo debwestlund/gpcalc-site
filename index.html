@@ -3,32 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GP Calc - Guard Products Calculators</title>
+<title>Sulfree Calculator | Guard Products Inc.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav class="main-nav">
-  <div class="nav-inner">
-    <a href="/" class="logo">
-      <img src="/img/9321962_guard-products-logo-transparent.png" alt="Guard Products" class="nav-logo">
-      <span class="logo-divider">|</span>
-      <span class="logo-site">GP Calc</span>
-    </a>
-    <div class="nav-links">
-      <a href="#calculator">Calculator</a>
-      <a href="#products">Products</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </div>
+<nav class="logo-bar">
+  <img src="img/guard-products-logo.png" alt="Guard Products — Better Chemistry ~ Better World" class="logo-img">
 </nav>
 
 <section class="hero">
   <div class="hero-content">
-    <h1 class="hero-title">Guard Products Calculator</h1>
-    <p class="hero-subtitle">Professional dosage calculations for water & wastewater treatment</p>
+    <h1 class="hero-title">Sulfree Calculator</h1>
+    <p class="hero-subtitle">H₂S Scavenger Dosage & Cost Calculator — Guard Products Inc.</p>
     <a href="#calculator" class="btn btn-hero">Calculate Now</a>
   </div>
   <div class="hero-bg"></div>
@@ -37,15 +26,15 @@
 <section class="calculator-section" id="calculator">
   <div class="calc-container">
     <div class="calc-header">
-      <h1 class="calc-title">Sulfree Calculator</h1>
-      <p>H₂S Scavenger Dosage Calculator — calculate the exact amount needed for your system</p>
+      <p class="calc-subtitle">Calculate exact dosage and treatment cost for your system</p>
     </div>
 
     <form class="calc-form" id="sulfreeForm">
+      <!-- Water Volume -->
       <div class="form-group">
         <label for="waterVolume">Water Volume</label>
         <div class="input-row">
-          <input type="number" id="waterVolume" name="waterVolume" placeholder="e.g., 1000000" required min="0" step="any">
+          <input type="number" id="waterVolume" placeholder="e.g., 1,000,000" required min="0" step="any">
           <select id="unit">
             <option value="gallons">Gallons</option>
             <option value="liters">Liters</option>
@@ -53,24 +42,40 @@
         </div>
       </div>
 
+      <!-- H2S PPM -->
       <div class="form-group">
         <label for="h2sPpm">H₂S Concentration (PPM)</label>
-        <input type="number" id="h2sPpm" name="h2sPpm" placeholder="e.g., 10" required min="0" step="any">
+        <input type="number" id="h2sPpm" placeholder="e.g., 10" required min="0" step="any">
       </div>
 
+      <!-- Product Dropdown -->
       <div class="form-group">
-        <label for="productPercentage">Sulfree Product Strength (%)</label>
-        <input type="number" id="productPercentage" name="productPercentage" placeholder="e.g., 15" required min="0" max="100" step="any">
-        <span class="help-text">Enter concentration percentage (e.g., 15 for Sulfree 1500)</span>
+        <label for="productSelect">Sulfree Product</label>
+        <select id="productSelect" onchange="updateProductPercent()">
+          <option value="15">Sulfree 1500 (15%)</option>
+          <option value="60">Sulfree 1560 (60%)</option>
+          <option value="80">Sulfree 1580 (80%)</option>
+        </select>
+        <span class="help-text" id="productHelp">Concentration: 15%</span>
+      </div>
+
+      <!-- Price -->
+      <div class="form-group">
+        <label for="pricePerUnit">Price per <span id="priceUnitLabel">gallon</span></label>
+        <div class="input-row">
+          <input type="number" id="pricePerUnit" placeholder="e.g., 2.50" required min="0" step="any">
+          <span class="dollar-sign">$</span>
+        </div>
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-calculate">Calculate Dosage</button>
+        <button type="submit" class="btn btn-calculate">Calculate Dosage & Cost</button>
       </div>
     </form>
 
+    <!-- Results -->
     <div class="calc-results" id="resultsPanel" style="display:none;">
-      <h3>Calculation Results</h3>
+      <h3>Results</h3>
       <div class="results-grid">
         <div class="result-card">
           <div class="result-label">H₂S to be Removed</div>
@@ -78,18 +83,32 @@
           <div class="result-unit" id="resultH2SUnit"></div>
         </div>
         <div class="result-card">
-          <div class="result-label">Concentrate Required (5:1 ratio)</div>
+          <div class="result-label">Concentrate Needed (5:1 ratio)</div>
           <div class="result-value" id="resultConcentrate">—</div>
           <div class="result-unit" id="resultConcentrateUnit"></div>
         </div>
         <div class="result-card highlight">
-          <div class="result-label">Total Product Needed</div>
+          <div class="result-label">Total Product Required</div>
           <div class="result-value" id="resultProduct">—</div>
           <div class="result-unit" id="resultProductUnit"></div>
         </div>
       </div>
-      <div class="calc-steps" id="calcSteps"></div>
-      <p class="results-note">* Results based on 5:1 Sulfree-to-H₂S reaction ratio. Actual dosages may vary based on system conditions. Contact Guard Products for custom recommendations.</p>
+      <div class="cost-card">
+        <div class="cost-row">
+          <span class="cost-label">Product Amount</span>
+          <span class="cost-value" id="costProductAmount">—</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Price per <span id="costUnitLabel">gallon</span></span>
+          <span class="cost-value" id="costPerUnit">—</span>
+        </div>
+        <div class="cost-divider"></div>
+        <div class="cost-row total">
+          <span class="cost-label">Total Treatment Cost</span>
+          <span class="cost-value" id="costTotal">—</span>
+        </div>
+      </div>
+      <p class="results-note">* Based on 5:1 Sulfree-to-H₂S reaction ratio. Actual dosages may vary. Contact Guard Products for custom recommendations.</p>
     </div>
   </div>
 </section>
@@ -102,22 +121,22 @@
       <a href="https://www.guardproducts.com/fog-grease-management" target="_blank" class="product-card">
         <div class="product-icon">🛢️</div>
         <h3>FOG & Grease Management</h3>
-        <p>Improve FSE profits, ops & footprint with Platescrape, Sink Screens, and FIX-60™ drain treatment</p>
+        <p>Platescrape, Sink Screens, and FIX-60™ drain treatment for FSE operations</p>
       </a>
       <a href="https://www.guardproducts.com/odor-control-scavenging" target="_blank" class="product-card">
         <div class="product-icon">💨</div>
         <h3>Odor & Compound Control</h3>
-        <p>Misting, injection, scrubbing & sweetening for H₂S, mercaptans, and hydrocarbon control</p>
+        <p>Misting, injection, scrubbing & sweetening for H₂S and mercaptans</p>
       </a>
       <a href="https://www.guardproducts.com/silver-dihydrogen-citrate" target="_blank" class="product-card">
         <div class="product-icon">🛡️</div>
         <h3>PURE® Sanitizing & Disinfection</h3>
-        <p>Silver Dihydrogen Citrate (SDC) — rapid broad-spectrum pathogen control without harsh chemicals</p>
+        <p>Silver Dihydrogen Citrate (SDC) — broad-spectrum pathogen control</p>
       </a>
       <a href="https://www.guardproducts.com/scale" target="_blank" class="product-card">
         <div class="product-icon">⚗️</div>
         <h3>Scale Cleaners & Inhibitors</h3>
-        <p>Blends for water & wastewater, oil & gas — keep your systems clean and flowing</p>
+        <p>Blends for water & wastewater, oil & gas applications</p>
       </a>
     </div>
   </div>
@@ -135,7 +154,7 @@
       <div class="contact-item">
         <div class="contact-icon">📞</div>
         <h3>Phone</h3>
-        <p><a href="tel:+15104108506">(510) 410-8506</a></p>
+        <p><a href="tel:+15106354353">(510) 635-4353</a></p>
       </div>
       <div class="contact-item">
         <div class="contact-icon">📍</div>
@@ -148,11 +167,11 @@
 
 <footer class="main-footer">
   <div class="footer-inner">
-    <p>© 2026 Guard Products, LLC. All rights reserved.</p>
+    <p>© 2026 Guard Products, Inc. All rights reserved.</p>
     <p class="tagline">Better Chemistry ~ Better World</p>
   </div>
 </footer>
 
-<script src="/js/calculator.js"></script>
+<script src="calculator.js"></script>
 </body>
 </html>
