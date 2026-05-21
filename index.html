@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sulfree Calculator | Guard Products Inc.</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>SulFree Fix Series Calculator | Guard Products</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -178,6 +181,74 @@
   </div>
 </footer>
 
-<script src="calculator.js"></script>
+
+<!-- INLINE CALCULATOR JS — no external file, no cache issues -->
+<script>
+// Cache-bust version 2
+document.addEventListener("DOMContentLoaded", function() {
+  var prodSel = document.getElementById("productSelect");
+  prodSel.addEventListener("change", function() {
+    document.getElementById("productHelp").textContent = "Concentration: " + this.value + "%";
+  });
+  document.getElementById("productHelp").textContent = "Concentration: " + prodSel.value + "%";
+  document.getElementById("sulfreeForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    doCalc();
+  });
+});
+function doCalc() {
+  var waterVol  = parseFloat(document.getElementById("waterVolume").value);
+  var h2sPpm    = parseFloat(document.getElementById("h2sPpm").value);
+  var prodPct   = parseFloat(document.getElementById("productSelect").value);
+  var price     = parseFloat(document.getElementById("pricePerUnit").value) || 0;
+  var waterUnit = document.getElementById("waterUnit").value;
+  var priceUnit = document.getElementById("priceUnit").value;
+  if (isNaN(waterVol) || waterVol <= 0 || isNaN(h2sPpm) || h2sPpm <= 0 || isNaN(prodPct) || prodPct <= 0) {
+    alert("Please fill in Water Volume, H₂S PPM, and select a product.");
+    return;
+  }
+  var waterIsL = (waterUnit === "liters");
+  var volGal = waterIsL ? waterVol * 0.264172 : waterVol;
+  var h2sGal     = volGal * (h2sPpm / 1000000);
+  var concGal    = h2sGal * 5;
+  var productGal = concGal / (prodPct / 100);
+  var volL = volGal * 3.78541, h2sL = h2sGal * 3.78541;
+  var concL = concGal * 3.78541, prodL = productGal * 3.78541;
+  document.getElementById("resultH2S").textContent = f(h2sGal) + " gal (" + f(h2sL) + " L)";
+  document.getElementById("resultConcentrate").textContent = f(concGal) + " gal (" + f(concL) + " L)";
+  document.getElementById("resultProduct").textContent = f(productGal) + " gal (" + f(prodL) + " L)";
+  if (waterIsL) {
+    document.getElementById("convText").innerHTML = "<strong>Water volume:</strong> " + f(waterVol) + " liters = " + f(volGal) + " gallons<br><strong>Sulfree needed:</strong> " + f(productGal) + " gallons (" + f(prodL) + " liters) to treat " + f(waterVol) + " liters of water";
+  } else {
+    document.getElementById("convText").innerHTML = "<strong>Water volume:</strong> " + f(waterVol) + " gallons = " + f(volL) + " liters<br><strong>Sulfree needed:</strong> " + f(productGal) + " gallons (" + f(prodL) + " liters) to treat " + f(waterVol) + " gallons of water";
+  }
+  var costCard = document.getElementById("costCard");
+  if (price > 0) {
+    var amt = (priceUnit === "liters") ? prodL : productGal;
+    var total = amt * price;
+    var label = (priceUnit === "liters") ? "Price per liter" : "Price per gallon";
+    document.getElementById("costUnitLabel").textContent = label;
+    document.getElementById("costPerUnit2").textContent  = "$" + f(price);
+    document.getElementById("costProductAmount").textContent = f(amt) + " " + (priceUnit === "liters" ? "liters" : "gallons");
+    document.getElementById("costTotal").textContent     = "$" + f(total);
+    costCard.style.display = "block";
+  } else {
+    costCard.style.display = "none";
+  }
+  var panel = document.getElementById("resultsPanel");
+  panel.style.display = "block";
+  panel.scrollIntoView({ behavior: "smooth" });
+}
+function f(n) {
+  if (n === 0)          return "0";
+  if (isNaN(n))         return "\u2014";
+  if (n < 0.0001)       return n.toExponential(2);
+  if (n < 1)            return n.toFixed(5);
+  if (n < 10)           return n.toFixed(4);
+  if (n < 100)          return n.toFixed(2);
+  if (n < 10000)        return n.toLocaleString("en-US", { maximumFractionDigits: 1 });
+  return Math.round(n).toLocaleString();
+}
+</script>
 </body>
 </html>
