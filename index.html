@@ -29,7 +29,7 @@
       <p class="calc-subtitle">Calculate exact dosage and treatment cost for your system</p>
     </div>
 
-    <form class="calc-form" id="sulfreeForm">
+    <form class="calc-form" id="sulfreeForm" onsubmit="return calculateNow();">
       <div class="form-group">
         <label for="waterVolume">Total Water Volume</label>
         <div class="input-row">
@@ -83,17 +83,14 @@
         <div class="result-card">
           <div class="result-label">H₂S to Remove</div>
           <div class="result-value" id="resultH2S">—</div>
-          <div class="result-unit" id="resultH2SUnit"></div>
         </div>
         <div class="result-card">
           <div class="result-label">Concentrate Needed (5:1)</div>
           <div class="result-value" id="resultConcentrate">—</div>
-          <div class="result-unit" id="resultConcentrateUnit"></div>
         </div>
         <div class="result-card highlight">
           <div class="result-label">Total Product Needed</div>
           <div class="result-value" id="resultProduct">—</div>
-          <div class="result-unit" id="resultProductUnit"></div>
         </div>
       </div>
 
@@ -101,9 +98,9 @@
         <div id="convText"></div>
       </div>
 
-      <div class="cost-card" id="costCard" style="display:none;">
+      <div class="cost-card" id="costCard">
         <div class="cost-row">
-          <span class="cost-label" id="costProductLabel">Product Required</span>
+          <span class="cost-label">Product Required</span>
           <span class="cost-value" id="costProductAmount">—</span>
         </div>
         <div class="cost-row">
