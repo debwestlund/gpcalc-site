@@ -112,8 +112,8 @@ body {
   border-left: none;
 }
 
-.price-input-wrap { display: flex; border-radius: 10px; overflow: visible; }
-.price-input-wrap .dollar-sign { border-radius: 10px 0 0 10px; }
+.price-input-wrap { display: flex; border-radius: 10px; }
+.price-input-wrap .dollar-sign { border-radius: 10px 0 0 10px; border-left: 2px solid #b0c4c0; border-top: 2px solid #b0c4c0; border-bottom: 2px solid #b0c4c0; }
 .price-input-wrap input { flex: 1; border: 2px solid #b0c4c0; border-left: none; border-radius: 0 10px 10px 0; padding-left: 0.2rem; }
 
 .help-text { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; margin-top: 0.2rem; }

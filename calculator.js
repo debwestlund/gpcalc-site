@@ -10,11 +10,8 @@ document.getElementById('productSelect').addEventListener('change', function() {
   updateProductPercent();
 });
 
-// Unit toggle - update price label
-document.getElementById('unit').addEventListener('change', function() {
-  var unitLabel = this.value === 'liters' ? 'liter' : 'gallon';
-  document.getElementById('priceUnitLabel').textContent = unitLabel;
-});
+// Unit dropdown removed - we keep it for volume toggle but remove price unit logic
+document.getElementById('unit').addEventListener('change', function() {});
 
 document.getElementById('sulfreeForm').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -23,10 +20,11 @@ document.getElementById('sulfreeForm').addEventListener('submit', function(e) {
   var volume = parseFloat(document.getElementById('waterVolume').value);
   var ppm = parseFloat(document.getElementById('h2sPpm').value);
   var productPct = parseFloat(document.getElementById('productSelect').value);
-  var price = parseFloat(document.getElementById('pricePerUnit').value);
+  var pricePerGallon = parseFloat(document.getElementById('pricePerGallon').value);
+  var pricePerLiter = parseFloat(document.getElementById('pricePerLiter').value);
   var unit = document.getElementById('unit').value;
 
-  if (isNaN(volume) || isNaN(ppm) || isNaN(price) || volume <= 0 || ppm <= 0 || price < 0) {
+  if (isNaN(volume) || isNaN(ppm) || volume <= 0 || ppm <= 0) {
     alert('Please fill in all fields with valid numbers.');
     return;
   }
@@ -42,40 +40,53 @@ document.getElementById('sulfreeForm').addEventListener('submit', function(e) {
 
   // Adjust for product concentration
   var totalProductGallons = concentrateNeeded / (productPct / 100);
+  var totalProductLiters = totalProductGallons * 3.78541;
 
-  // Convert results back to input unit
-  var displayH2S, displayConcentrate, displayProduct;
-  var unitLabel = unit === 'liters' ? 'liters' : 'gallons';
+  // Costs
+  var totalCostGallons = (!isNaN(pricePerGallon)) ? totalProductGallons * pricePerGallon : null;
+  var totalCostLiters = (!isNaN(pricePerLiter)) ? totalProductLiters * pricePerLiter : null;
 
-  if (unit === 'liters') {
-    displayH2S = h2sAmount * 3.78541;
-    displayConcentrate = concentrateNeeded * 3.78541;
-    displayProduct = totalProductGallons * 3.78541;
+  // Product amount display (always show both)
+  document.getElementById('costProductAmount').textContent = formatNum(totalProductGallons) + ' gallons (' + formatNum(totalProductLiters) + ' liters)';
+
+  // Gallon costs
+  if (!isNaN(pricePerGallon)) {
+    document.getElementById('costPerGallon').textContent = '$' + formatNum(pricePerGallon);
+    document.getElementById('costTotalGallon').textContent = '$' + formatNum(totalCostGallons);
+    document.getElementById('costPerGallon').style.display = '';
+    document.getElementById('costTotalGallon').style.display = '';
   } else {
-    displayH2S = h2sAmount;
-    displayConcentrate = concentrateNeeded;
-    displayProduct = totalProductGallons;
+    document.getElementById('costPerGallon').textContent = '—';
+    document.getElementById('costTotalGallon').textContent = '—';
   }
 
-  // Cost: totalProductGallons * price
-  var totalCost = totalProductGallons * price;
+  // Liter costs
+  if (!isNaN(pricePerLiter)) {
+    document.getElementById('costPerLiter').textContent = '$' + formatNum(pricePerLiter);
+    document.getElementById('costTotalLiter').textContent = '$' + formatNum(totalCostLiters);
+    document.getElementById('costPerLiter').style.display = '';
+    document.getElementById('costTotalLiter').style.display = '';
+  } else {
+    document.getElementById('costPerLiter').textContent = '—';
+    document.getElementById('costTotalLiter').textContent = '—';
+  }
 
-  // Populate results
-  document.getElementById('resultH2S').textContent = formatNum(displayH2S);
-  document.getElementById('resultConcentrate').textContent = formatNum(displayConcentrate);
-  document.getElementById('resultProduct').textContent = formatNum(displayProduct);
-  document.getElementById('resultH2SUnit').textContent = unitLabel;
-  document.getElementById('resultConcentrateUnit').textContent = unitLabel;
-  document.getElementById('resultProductUnit').textContent = unitLabel;
+  // Show results panel
+  document.getElementById('resultH2S').textContent = formatNum(totalProductGallons * (productPct / 100) / 5);
+  // Re-calculate H2S from formula: h2sAmount = volumeGallons * (ppm / 1000000)
+  var h2sGallons = volumeGallons * (ppm / 1000000);
+  var h2sLiters = h2sGallons * 3.78541;
+  document.getElementById('resultH2S').textContent = formatNum(h2sGallons);
+  document.getElementById('resultH2SUnit').textContent = 'gallons (' + formatNum(h2sLiters) + ' L)';
 
-  // Cost section
-  var priceUnit = unit === 'liters' ? 'liter' : 'gallon';
-  document.getElementById('costUnitLabel').textContent = priceUnit;
-  document.getElementById('costProductAmount').textContent = formatNum(displayProduct) + ' ' + unitLabel;
-  document.getElementById('costPerUnit').textContent = '$' + formatNum(price) + ' per ' + priceUnit;
-  document.getElementById('costTotal').textContent = '$' + formatNum(totalCost);
+  var concGallons = concentrateNeeded;
+  var concLiters = concentrateNeeded * 3.78541;
+  document.getElementById('resultConcentrate').textContent = formatNum(concGallons);
+  document.getElementById('resultConcentrateUnit').textContent = 'gallons (' + formatNum(concLiters) + ' L)';
 
-  // Show results
+  document.getElementById('resultProduct').textContent = formatNum(totalProductGallons);
+  document.getElementById('resultProductUnit').textContent = 'gallons (' + formatNum(totalProductLiters) + ' L)';
+
   document.getElementById('resultsPanel').style.display = 'block';
   document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 });

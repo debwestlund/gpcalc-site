@@ -59,12 +59,21 @@
         <span class="help-text" id="productHelp">Concentration: 15%</span>
       </div>
 
-      <!-- Price -->
+      <!-- Price per Gallon -->
       <div class="form-group">
-        <label for="pricePerUnit">Price per <span id="priceUnitLabel">gallon</span></label>
-        <div class="input-row">
-          <input type="number" id="pricePerUnit" placeholder="e.g., 2.50" required min="0" step="any">
-          <span class="dollar-sign">$</span>
+        <label for="pricePerGallon">Cost per Gallon</label>
+        <div class="price-input-wrap">
+          <div class="dollar-sign">$</div>
+          <input type="number" id="pricePerGallon" placeholder="e.g., 2.50" required min="0" step="any">
+        </div>
+      </div>
+
+      <!-- Price per Liter -->
+      <div class="form-group">
+        <label for="pricePerLiter">Cost per Liter</label>
+        <div class="price-input-wrap">
+          <div class="dollar-sign">$</div>
+          <input type="number" id="pricePerLiter" placeholder="e.g., 0.66" required min="0" step="any">
         </div>
       </div>
 
@@ -99,13 +108,25 @@
           <span class="cost-value" id="costProductAmount">—</span>
         </div>
         <div class="cost-row">
-          <span class="cost-label">Price per <span id="costUnitLabel">gallon</span></span>
-          <span class="cost-value" id="costPerUnit">—</span>
+          <span class="cost-label">Cost per Gallon</span>
+          <span class="cost-value" id="costPerGallon">—</span>
+        </div>
+        <div class="cost-row total">
+          <span class="cost-label">Total Treatment Cost (gallons)</span>
+          <span class="cost-value" id="costTotalGallon">—</span>
         </div>
         <div class="cost-divider"></div>
+        <div class="cost-row">
+          <span class="cost-label">Product Amount (liters)</span>
+          <span class="cost-value" id="costProductLiters">—</span>
+        </div>
+        <div class="cost-row">
+          <span class="cost-label">Cost per Liter</span>
+          <span class="cost-value" id="costPerLiter">—</span>
+        </div>
         <div class="cost-row total">
-          <span class="cost-label">Total Treatment Cost</span>
-          <span class="cost-value" id="costTotal">—</span>
+          <span class="cost-label">Total Treatment Cost (liters)</span>
+          <span class="cost-value" id="costTotalLiter">—</span>
         </div>
       </div>
       <p class="results-note">* Based on 5:1 Sulfree-to-H₂S reaction ratio. Actual dosages may vary. Contact Guard Products for custom recommendations.</p>
