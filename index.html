@@ -11,13 +11,13 @@
 <body>
 
 <nav class="logo-bar">
-  <img src="img/guard-products-logo.png" alt="Guard Products — Better Chemistry ~ Better World" class="logo-img">
+  <img src="img/guard-products-logo.png" alt="Guard Products" class="logo-img">
 </nav>
 
 <section class="hero">
   <div class="hero-content">
     <h1 class="hero-title">Sulfree Calculator</h1>
-    <p class="hero-subtitle">H₂S Scavenger Dosage & Cost Calculator — Guard Products Inc.</p>
+    <p class="hero-subtitle">H₂S Scavenger Dosage & Cost Calculator</p>
     <a href="#calculator" class="btn btn-hero">Calculate Now</a>
   </div>
   <div class="hero-bg"></div>
@@ -30,7 +30,6 @@
     </div>
 
     <form class="calc-form" id="sulfreeForm">
-      <!-- Water Volume -->
       <div class="form-group">
         <label for="waterVolume">Total Water Volume</label>
         <div class="input-row">
@@ -42,16 +41,14 @@
         </div>
       </div>
 
-      <!-- H2S PPM -->
       <div class="form-group">
         <label for="h2sPpm">H₂S Concentration (PPM)</label>
         <input type="number" id="h2sPpm" placeholder="e.g., 10" required min="0" step="any">
       </div>
 
-      <!-- Product Dropdown -->
       <div class="form-group">
         <label for="productSelect">Sulfree Product</label>
-        <select id="productSelect" onchange="updateProductPercent()">
+        <select id="productSelect">
           <option value="15">Sulfree 1500 (15%)</option>
           <option value="60">Sulfree 1560 (60%)</option>
           <option value="80">Sulfree 1580 (80%)</option>
@@ -59,14 +56,17 @@
         <span class="help-text" id="productHelp">Concentration: 15%</span>
       </div>
 
-      <!-- Price -->
       <div class="form-group">
         <label for="pricePerUnit">Cost</label>
         <div class="price-input-wrap">
           <div class="dollar-sign">$</div>
           <input type="number" id="pricePerUnit" placeholder="e.g., 2.50" min="0" step="any">
         </div>
-        <select id="priceUnit" style="margin-top:0.4rem; padding:0.5rem 0.8rem; border:2px solid #b0c4c0; border-radius:8px; font-weight:700; font-size:0.9rem; background:#fafbfc; cursor:pointer;">
+      </div>
+
+      <div class="form-group">
+        <label for="priceUnit">Price Unit</label>
+        <select id="priceUnit">
           <option value="gallons">per Gallon</option>
           <option value="liters">per Liter</option>
         </select>
@@ -77,10 +77,8 @@
       </div>
     </form>
 
-    <!-- Results -->
     <div class="calc-results" id="resultsPanel" style="display:none;">
       <h3>Results</h3>
-
       <div class="results-grid">
         <div class="result-card">
           <div class="result-label">H₂S to Remove</div>
@@ -99,16 +97,13 @@
         </div>
       </div>
 
-      <!-- Conversion summary -->
-      <div class="conversion-box">
-        <h4>Unit Conversion</h4>
-        <p class="conv-text" id="convText"></p>
+      <div class="unit-conversion">
+        <div id="convText"></div>
       </div>
 
-      <!-- Cost -->
       <div class="cost-card" id="costCard" style="display:none;">
         <div class="cost-row">
-          <span class="cost-label">Product Required</span>
+          <span class="cost-label" id="costProductLabel">Product Required</span>
           <span class="cost-value" id="costProductAmount">—</span>
         </div>
         <div class="cost-row">
