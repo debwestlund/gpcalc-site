@@ -1,105 +1,103 @@
-// Update product percentage label when dropdown changes
+/**
+ * Sulfree H2S Dosage Calculator
+ * Everything calculated in GALLONS internally.
+ * Results always shown in BOTH gallons and liters.
+ */
+
+// Product percentage label
 function updateProductPercent() {
   var sel = document.getElementById('productSelect');
-  var pct = sel.value;
-  var name = sel.options[sel.selectedIndex].text;
-  document.getElementById('productHelp').textContent = 'Concentration: ' + pct + '%';
+  document.getElementById('productHelp').textContent = 'Concentration: ' + sel.value + '%';
 }
-
-document.getElementById('productSelect').addEventListener('change', function() {
-  updateProductPercent();
-});
-
-// Unit dropdown removed - we keep it for volume toggle but remove price unit logic
-document.getElementById('unit').addEventListener('change', function() {});
 
 document.getElementById('sulfreeForm').addEventListener('submit', function(e) {
   e.preventDefault();
 
-  // Read inputs
-  var volume = parseFloat(document.getElementById('waterVolume').value);
-  var ppm = parseFloat(document.getElementById('h2sPpm').value);
+  var waterVol   = parseFloat(document.getElementById('waterVolume').value);
+  var h2sPpm     = parseFloat(document.getElementById('h2sPpm').value);
   var productPct = parseFloat(document.getElementById('productSelect').value);
-  var pricePerGallon = parseFloat(document.getElementById('pricePerGallon').value);
-  var pricePerLiter = parseFloat(document.getElementById('pricePerLiter').value);
-  var unit = document.getElementById('unit').value;
+  var price      = parseFloat(document.getElementById('pricePerUnit').value) || 0;
+  var waterUnit  = document.getElementById('waterUnit').value;   // gallons | liters
+  var priceUnit  = document.getElementById('priceUnit').value;   // gallons | liters
+  var waterIsLiters = (waterUnit === 'liters');
 
-  if (isNaN(volume) || isNaN(ppm) || volume <= 0 || ppm <= 0) {
-    alert('Please fill in all fields with valid numbers.');
+  if (isNaN(waterVol) || waterVol <= 0 || isNaN(h2sPpm) || h2sPpm <= 0 || isNaN(productPct) || productPct <= 0) {
+    alert('Please fill in all fields with valid positive numbers.');
     return;
   }
 
-  // Convert to gallons for calculation
-  var volumeGallons = unit === 'liters' ? volume * 0.264172 : volume;
+  /* ---- all calculations in GALLONS ---- */
+  // Convert water volume to gallons
+  var volGal = waterIsLiters ? waterVol * 0.264172 : waterVol;
 
-  // H2S amount: volume * (PPM / 1,000,000) - in gallons
-  var h2sAmount = volumeGallons * (ppm / 1000000);
+  // H2S amount (gallons of H2S in the water)
+  var h2sGal = volGal * (h2sPpm / 1000000);
 
-  // Concentrate needed (5:1 ratio)
-  var concentrateNeeded = h2sAmount * 5;
+  // Sulfree concentrate needed (5 : 1 ratio)
+  var concGal = h2sGal * 5;
 
   // Adjust for product concentration
-  var totalProductGallons = concentrateNeeded / (productPct / 100);
-  var totalProductLiters = totalProductGallons * 3.78541;
+  var productGal = concGal / (productPct / 100);
 
-  // Costs
-  var totalCostGallons = (!isNaN(pricePerGallon)) ? totalProductGallons * pricePerGallon : null;
-  var totalCostLiters = (!isNaN(pricePerLiter)) ? totalProductLiters * pricePerLiter : null;
+  // Liters equivalents
+  var volL  = volGal * 3.78541;
+  var h2sL  = h2sGal * 3.78541;
+  var concL = concGal * 3.78541;
+  var prodL = productGal * 3.78541;
 
-  // Product amount display (always show both)
-  document.getElementById('costProductAmount').textContent = formatNum(totalProductGallons) + ' gallons (' + formatNum(totalProductLiters) + ' liters)';
+  /* ---- populate 3 result cards (both units) ---- */
+  document.getElementById('resultH2S').textContent     = f(h2sGal) + ' gal (' + f(h2sL) + ' L)';
+  document.getElementById('resultH2SUnit').textContent  = '';
 
-  // Gallon costs
-  if (!isNaN(pricePerGallon)) {
-    document.getElementById('costPerGallon').textContent = '$' + formatNum(pricePerGallon);
-    document.getElementById('costTotalGallon').textContent = '$' + formatNum(totalCostGallons);
-    document.getElementById('costPerGallon').style.display = '';
-    document.getElementById('costTotalGallon').style.display = '';
+  document.getElementById('resultConcentrate').textContent    = f(concGal) + ' gal (' + f(concL) + ' L)';
+  document.getElementById('resultConcentrateUnit').textContent = '';
+
+  document.getElementById('resultProduct').textContent     = f(productGal) + ' gal (' + f(prodL) + ' L)';
+  document.getElementById('resultProductUnit').textContent  = '';
+
+  /* ---- conversion summary ---- */
+  var convLines = '';
+  if (waterIsLiters) {
+    convLines  = '<strong>Water volume:</strong> ' + f(waterVol) + ' liters = ' + f(volGal) + ' gallons<br>';
+    convLines += '<strong>Sulfree needed:</strong> ' + f(productGal) + ' gallons (' + f(prodL) + ' liters) to treat ' + f(waterVol) + ' liters of water';
   } else {
-    document.getElementById('costPerGallon').textContent = '—';
-    document.getElementById('costTotalGallon').textContent = '—';
+    convLines  = '<strong>Water volume:</strong> ' + f(waterVol) + ' gallons = ' + f(volL) + ' liters<br>';
+    convLines += '<strong>Sulfree needed:</strong> ' + f(productGal) + ' gallons (' + f(prodL) + ' liters) to treat ' + f(waterVol) + ' gallons of water';
+  }
+  document.getElementById('convText').innerHTML = convLines;
+
+  /* ---- cost ---- */
+  var costCard = document.getElementById('costCard');
+  if (price > 0) {
+    // Price is in whatever unit the user selected; convert product to that unit
+    var productForPrice = (priceUnit === 'liters') ? prodL : productGal;
+    var totalCost = productForPrice * price;
+    var puLabel = (priceUnit === 'liters') ? 'Price per liter' : 'Price per gallon';
+
+    document.getElementById('costUnitLabel').textContent = puLabel;
+    document.getElementById('costPerUnit2').textContent  = '$' + f(price);
+    document.getElementById('costProductAmount').textContent = f(productForPrice) + ' ' + (priceUnit === 'liters' ? 'liters' : 'gallons');
+    document.getElementById('costTotal').textContent     = '$' + f(totalCost);
+    costCard.style.display = 'block';
+  } else {
+    costCard.style.display = 'none';
   }
 
-  // Liter costs
-  if (!isNaN(pricePerLiter)) {
-    document.getElementById('costPerLiter').textContent = '$' + formatNum(pricePerLiter);
-    document.getElementById('costTotalLiter').textContent = '$' + formatNum(totalCostLiters);
-    document.getElementById('costPerLiter').style.display = '';
-    document.getElementById('costTotalLiter').style.display = '';
-  } else {
-    document.getElementById('costPerLiter').textContent = '—';
-    document.getElementById('costTotalLiter').textContent = '—';
-  }
-
-  // Show results panel
-  document.getElementById('resultH2S').textContent = formatNum(totalProductGallons * (productPct / 100) / 5);
-  // Re-calculate H2S from formula: h2sAmount = volumeGallons * (ppm / 1000000)
-  var h2sGallons = volumeGallons * (ppm / 1000000);
-  var h2sLiters = h2sGallons * 3.78541;
-  document.getElementById('resultH2S').textContent = formatNum(h2sGallons);
-  document.getElementById('resultH2SUnit').textContent = 'gallons (' + formatNum(h2sLiters) + ' L)';
-
-  var concGallons = concentrateNeeded;
-  var concLiters = concentrateNeeded * 3.78541;
-  document.getElementById('resultConcentrate').textContent = formatNum(concGallons);
-  document.getElementById('resultConcentrateUnit').textContent = 'gallons (' + formatNum(concLiters) + ' L)';
-
-  document.getElementById('resultProduct').textContent = formatNum(totalProductGallons);
-  document.getElementById('resultProductUnit').textContent = 'gallons (' + formatNum(totalProductLiters) + ' L)';
-
+  /* ---- show results panel ---- */
   document.getElementById('resultsPanel').style.display = 'block';
   document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 });
 
-function formatNum(num) {
-  if (num === 0) return '0';
-  if (isNaN(num) || !isFinite(num)) return '—';
-  if (num < 0.0001) return '<0.0001';
-  if (num < 1) return num.toFixed(5);
-  if (num < 10) return num.toFixed(4);
-  if (num < 100) return num.toFixed(3);
-  if (num >= 1000) return num.toLocaleString('en-US', { maximumFractionDigits: 1 });
-  return num.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+// Format helper
+function f(num) {
+  if (num === 0)  return '0';
+  if (isNaN(num)) return '—';
+  if (num < 0.0001)  return num.toExponential(2);
+  if (num < 1)       return num.toFixed(5);
+  if (num < 10)      return num.toFixed(4);
+  if (num < 100)     return num.toFixed(2);
+  if (num < 10000)   return num.toLocaleString('en-US', { maximumFractionDigits: 1 });
+  return Math.round(num).toLocaleString();
 }
 
 // Init

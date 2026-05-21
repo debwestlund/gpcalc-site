@@ -113,8 +113,27 @@ body {
 }
 
 .price-input-wrap { display: flex; border-radius: 10px; }
-.price-input-wrap .dollar-sign { border-radius: 10px 0 0 10px; border-left: 2px solid #b0c4c0; border-top: 2px solid #b0c4c0; border-bottom: 2px solid #b0c4c0; }
-.price-input-wrap input { flex: 1; border: 2px solid #b0c4c0; border-left: none; border-radius: 0 10px 10px 0; padding-left: 0.2rem; }
+.price-input-wrap .dollar-sign {
+  border-radius: 10px 0 0 10px;
+  border-left: 2px solid #b0c4c0; border-top: 2px solid #b0c4c0; border-bottom: 2px solid #b0c4c0;
+  border-right: none;
+}
+.price-input-wrap input { flex: 1; border: 2px solid #b0c4c0; border-left: none; border-radius: 0 10px 10px 0; padding-left: 0.3rem; }
+#priceUnit { min-width: 120px; }
+
+/* Conversion box */
+.conversion-box {
+  background: var(--teal-light);
+  border-radius: 10px; padding: 1rem 1.2rem;
+  border: 2px solid var(--accent);
+  margin-bottom: 1.2rem;
+}
+.conversion-box h4 {
+  font-size: 0.95rem; font-weight: 900; color: var(--primary); margin-bottom: 0.3rem;
+}
+.conv-text {
+  font-size: 0.92rem; color: #1a1a1a; font-weight: 600; line-height: 1.5;
+}
 
 .help-text { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; margin-top: 0.2rem; }
 

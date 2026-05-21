@@ -32,10 +32,10 @@
     <form class="calc-form" id="sulfreeForm">
       <!-- Water Volume -->
       <div class="form-group">
-        <label for="waterVolume">Water Volume</label>
+        <label for="waterVolume">Total Water Volume</label>
         <div class="input-row">
           <input type="number" id="waterVolume" placeholder="e.g., 1,000,000" required min="0" step="any">
-          <select id="unit">
+          <select id="waterUnit">
             <option value="gallons">Gallons</option>
             <option value="liters">Liters</option>
           </select>
@@ -59,76 +59,69 @@
         <span class="help-text" id="productHelp">Concentration: 15%</span>
       </div>
 
-      <!-- Price per Gallon -->
+      <!-- Price -->
       <div class="form-group">
-        <label for="pricePerGallon">Cost per Gallon</label>
+        <label for="pricePerUnit">Cost</label>
         <div class="price-input-wrap">
           <div class="dollar-sign">$</div>
-          <input type="number" id="pricePerGallon" placeholder="e.g., 2.50" required min="0" step="any">
+          <input type="number" id="pricePerUnit" placeholder="e.g., 2.50" min="0" step="any">
         </div>
-      </div>
-
-      <!-- Price per Liter -->
-      <div class="form-group">
-        <label for="pricePerLiter">Cost per Liter</label>
-        <div class="price-input-wrap">
-          <div class="dollar-sign">$</div>
-          <input type="number" id="pricePerLiter" placeholder="e.g., 0.66" required min="0" step="any">
-        </div>
+        <select id="priceUnit" style="margin-top:0.4rem; padding:0.5rem 0.8rem; border:2px solid #b0c4c0; border-radius:8px; font-weight:700; font-size:0.9rem; background:#fafbfc; cursor:pointer;">
+          <option value="gallons">per Gallon</option>
+          <option value="liters">per Liter</option>
+        </select>
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-calculate">Calculate Dosage & Cost</button>
+        <button type="submit" class="btn btn-calculate">Calculate</button>
       </div>
     </form>
 
     <!-- Results -->
     <div class="calc-results" id="resultsPanel" style="display:none;">
       <h3>Results</h3>
+
       <div class="results-grid">
         <div class="result-card">
-          <div class="result-label">H₂S to be Removed</div>
+          <div class="result-label">H₂S to Remove</div>
           <div class="result-value" id="resultH2S">—</div>
           <div class="result-unit" id="resultH2SUnit"></div>
         </div>
         <div class="result-card">
-          <div class="result-label">Concentrate Needed (5:1 ratio)</div>
+          <div class="result-label">Concentrate Needed (5:1)</div>
           <div class="result-value" id="resultConcentrate">—</div>
           <div class="result-unit" id="resultConcentrateUnit"></div>
         </div>
         <div class="result-card highlight">
-          <div class="result-label">Total Product Required</div>
+          <div class="result-label">Total Product Needed</div>
           <div class="result-value" id="resultProduct">—</div>
           <div class="result-unit" id="resultProductUnit"></div>
         </div>
       </div>
-      <div class="cost-card">
+
+      <!-- Conversion summary -->
+      <div class="conversion-box">
+        <h4>Unit Conversion</h4>
+        <p class="conv-text" id="convText"></p>
+      </div>
+
+      <!-- Cost -->
+      <div class="cost-card" id="costCard" style="display:none;">
         <div class="cost-row">
-          <span class="cost-label">Product Amount</span>
+          <span class="cost-label">Product Required</span>
           <span class="cost-value" id="costProductAmount">—</span>
         </div>
         <div class="cost-row">
-          <span class="cost-label">Cost per Gallon</span>
-          <span class="cost-value" id="costPerGallon">—</span>
-        </div>
-        <div class="cost-row total">
-          <span class="cost-label">Total Treatment Cost (gallons)</span>
-          <span class="cost-value" id="costTotalGallon">—</span>
+          <span class="cost-label" id="costUnitLabel">Price per gallon</span>
+          <span class="cost-value" id="costPerUnit2">—</span>
         </div>
         <div class="cost-divider"></div>
-        <div class="cost-row">
-          <span class="cost-label">Product Amount (liters)</span>
-          <span class="cost-value" id="costProductLiters">—</span>
-        </div>
-        <div class="cost-row">
-          <span class="cost-label">Cost per Liter</span>
-          <span class="cost-value" id="costPerLiter">—</span>
-        </div>
         <div class="cost-row total">
-          <span class="cost-label">Total Treatment Cost (liters)</span>
-          <span class="cost-value" id="costTotalLiter">—</span>
+          <span class="cost-label">Total Treatment Cost</span>
+          <span class="cost-value" id="costTotal">—</span>
         </div>
       </div>
+
       <p class="results-note">* Based on 5:1 Sulfree-to-H₂S reaction ratio. Actual dosages may vary. Contact Guard Products for custom recommendations.</p>
     </div>
   </div>
